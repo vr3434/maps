@@ -120,7 +120,7 @@ function renderGallery(gallery, photos, title) {
 
 const lightboxStyle = document.createElement("style");
 lightboxStyle.textContent = `
-  .place-popup .gallery { width: 100%; }
+  .place-popup .gallery { display: block; width: 100%; }
   .gallery-frame { position: relative; width: 100%; overflow: hidden; border-radius: 9px; background: #eef0f2; }
   .gallery-current { display: block; width: 100%; height: 160px; object-fit: cover; cursor: zoom-in; }
   .gallery-arrow, .lightbox-arrow {
