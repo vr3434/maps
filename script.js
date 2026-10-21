@@ -26,7 +26,7 @@ const PLACES = [
     title: "Новая метка",
     coordinates: [61.261566, 73.187978],
     description: "Место по заданным координатам.",
-    photos: []
+    photos: ["P1281853.jpg"]
   }
 ];
 
