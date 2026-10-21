@@ -66,3 +66,66 @@ PLACES.forEach(place => {
     .addTo(map)
     .bindPopup(popupContent(place), { maxWidth: 280 });
 });
+
+
+// Полноэкранный просмотр фото: нажмите на любое фото внутри окна метки.
+const lightboxStyle = document.createElement("style");
+lightboxStyle.textContent = `
+  .place-popup .gallery img { cursor: zoom-in; }
+  .photo-lightbox {
+    position: fixed; inset: 0; z-index: 10000;
+    display: flex; align-items: center; justify-content: center;
+    padding: 48px 16px 16px; box-sizing: border-box;
+    background: rgba(0, 0, 0, .94); cursor: zoom-out;
+  }
+  .photo-lightbox[hidden] { display: none; }
+  .photo-lightbox img {
+    display: block; max-width: 100%; max-height: 100%;
+    width: auto; height: auto; object-fit: contain;
+    cursor: default; box-shadow: 0 8px 40px rgba(0,0,0,.35);
+  }
+  .photo-lightbox-close {
+    position: absolute; top: 10px; right: 14px;
+    width: 44px; height: 44px; border: 0; border-radius: 50%;
+    color: #fff; background: rgba(255,255,255,.16);
+    font: 32px/1 sans-serif; cursor: pointer;
+  }
+  .photo-lightbox-close:focus-visible { outline: 2px solid white; outline-offset: 3px; }
+`;
+document.head.appendChild(lightboxStyle);
+
+const lightbox = document.createElement("div");
+lightbox.className = "photo-lightbox";
+lightbox.hidden = true;
+lightbox.setAttribute("role", "dialog");
+lightbox.setAttribute("aria-modal", "true");
+lightbox.setAttribute("aria-label", "Просмотр фотографии");
+lightbox.innerHTML = '<button type="button" class="photo-lightbox-close" aria-label="Закрыть фото">×</button><img alt="">';
+document.body.appendChild(lightbox);
+
+const lightboxImage = lightbox.querySelector("img");
+const closeLightbox = () => {
+  lightbox.hidden = true;
+  lightboxImage.removeAttribute("src");
+};
+lightbox.querySelector("button").addEventListener("click", closeLightbox);
+lightbox.addEventListener("click", event => {
+  if (event.target === lightbox) closeLightbox();
+});
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape" && !lightbox.hidden) closeLightbox();
+});
+document.addEventListener("click", event => {
+  const thumbnail = event.target.closest(".place-popup .gallery img");
+  if (!thumbnail) return;
+  event.preventDefault();
+  event.stopPropagation();
+  lightboxImage.alt = thumbnail.alt || "Фотография";
+  // Для удалённых Unsplash-фото просим более крупный размер; локальные фото не меняем.
+  const source = thumbnail.getAttribute("src");
+  lightboxImage.src = source && source.includes("images.unsplash.com/")
+    ? source.replace(/([?&])w=700\b/, "$1w=2000")
+    : source;
+  lightbox.hidden = false;
+  lightbox.querySelector("button").focus();
+});
