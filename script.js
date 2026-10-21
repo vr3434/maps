@@ -21,6 +21,12 @@ const PLACES = [
     photos: [
       "https://images.unsplash.com/photo-1518005020951-eccb494ad742?auto=format&fit=crop&w=700&q=80"
     ]
+  },
+  {
+    title: "Новая метка",
+    coordinates: [61.261566, 73.187978],
+    description: "Место по заданным координатам.",
+    photos: []
   }
 ];
 
