@@ -27,9 +27,9 @@ const PLACES = [
     ]
   },
   {
-    title: "я кстати здесь живу",
+    title: "асфальт",
     coordinates: [61.261566, 73.187978],
-    description: "место приживания создателя сайта",
+    description: "место с асфальтом",
     photos: ["P1281853.JPG"]
   },
   {
