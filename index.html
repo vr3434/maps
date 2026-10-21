@@ -240,16 +240,39 @@
     color: #028eff;
 }
 </style><script type="text/javascript" charset="utf8" async="" src="./Сургутский район — 2ГИС_files/dash.all.min.js.загрузка"></script><style id="hide-left-sidebar-only">
-html, body, #root { width:100% !important; height:100% !important; margin:0 !important; overflow:hidden !important; }
-/* Hide the left navigation and results panel only */
-#root ._1sf34doj, #root ._1qecu7z, #root ._1vqha93 { }
-#root ._1sf34doj { display:none !important; }
-#root ._1qecu7z { display:none !important; }
-/* Let the original map layout expand naturally; keep its pointer/touch handling */
-#root > div { width:100% !important; height:100% !important; }
-#root ._121zpzx { width:100% !important; height:100% !important; }
-#root ._1vqha93 { flex:1 1 auto !important; width:100% !important; min-width:0 !important; }
-#root ._guxkefv, #root ._1xzra4e, #root ._1yfus1e { width:100% !important; height:100% !important; }
+/* Full-screen map: hide only the left navigation and side panel. */
+html, body, #root {
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+}
+#root > div {
+  width: 100% !important;
+  height: 100% !important;
+}
+/* Left navigation rail */
+#root ._1sf34doj {
+  display: none !important;
+}
+/* Left search/results panel */
+#root ._1qecu7z {
+  display: none !important;
+}
+/* Preserve the map's own rendering and pointer/touch event layers. */
+#root ._qmwguyk {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+#root #map {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  touch-action: pan-x pan-y !important;
+}
 </style>
 </head>
 
