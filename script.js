@@ -6,7 +6,7 @@
 const REPO_OWNER = "VR3434";
 const REPO_NAME = "maps";
 const REPO_BRANCH = "fix/fullscreen-map-and-refresh";
-const PHOTO_EXTENSIONS = /\.(jpe?g|png|gif|webp|avif)$/i;
+const MEDIA_EXTENSIONS = /\.(jpe?g|png|gif|webp|avif|mp4)$/i;
 
 const PLACES = [
   {
@@ -72,7 +72,7 @@ function popupContent(place) {
     folderAttribute + photosAttribute + '><div class="no-photos">Загрузка фотографий…</div></div></div>';
 }
 
-async function listFolderPhotos(folder) {
+async function listFolderMedia(folder) {
   const url = 'https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME +
     '/contents/' + folder.split("/").map(encodeURIComponent).join("/") +
     '?ref=' + encodeURIComponent(REPO_BRANCH);
@@ -81,46 +81,60 @@ async function listFolderPhotos(folder) {
   const files = await response.json();
   if (!Array.isArray(files)) return [];
   return files
-    .filter(file => file.type === "file" && PHOTO_EXTENSIONS.test(file.name))
+    .filter(file => file.type === "file" && MEDIA_EXTENSIONS.test(file.name))
     .sort((a, b) => a.name.localeCompare(b.name, "ru", { numeric: true }))
-    .map(file => file.download_url)
-    .filter(Boolean);
+    .map(file => ({ url: file.download_url, type: /\.mp4$/i.test(file.name) ? "video" : "image" }))
+    .filter(file => file.url);
 }
 
-function renderGallery(gallery, photos, title) {
+function renderGallery(gallery, media, title) {
   gallery.replaceChildren();
-  if (!photos.length) {
-    gallery.innerHTML = '<div class="no-photos">В папке пока нет фотографий JPG, PNG, GIF, WEBP или AVIF.</div>';
+  if (!media.length) {
+    gallery.innerHTML = '<div class="no-photos">В папке пока нет фото или видео MP4.</div>';
     return;
   }
   let current = 0;
   const frame = document.createElement("div");
   frame.className = "gallery-frame";
-  const image = document.createElement("img");
-  image.className = "gallery-current";
-  image.alt = title + " — фото 1";
-  image.loading = "lazy";
-  image.addEventListener("click", () => openLightbox(photos, current, title));
+  const stage = document.createElement("div");
+  stage.className = "gallery-stage";
   const prev = document.createElement("button");
   prev.type = "button"; prev.className = "gallery-arrow gallery-prev";
-  prev.textContent = "‹"; prev.setAttribute("aria-label", "Предыдущее фото");
+  prev.textContent = "‹"; prev.setAttribute("aria-label", "Предыдущий файл");
   const next = document.createElement("button");
   next.type = "button"; next.className = "gallery-arrow gallery-next";
-  next.textContent = "›"; next.setAttribute("aria-label", "Следующее фото");
+  next.textContent = "›"; next.setAttribute("aria-label", "Следующий файл");
   const count = document.createElement("div");
   count.className = "gallery-count";
   function show(index) {
-    current = (index + photos.length) % photos.length;
-    image.src = photos[current];
-    image.alt = title + " — фото " + (current + 1);
-    count.textContent = (current + 1) + " / " + photos.length;
-    const arrowsVisible = photos.length > 1;
-    prev.hidden = !arrowsVisible;
-    next.hidden = !arrowsVisible;
+    current = (index + media.length) % media.length;
+    stage.replaceChildren();
+    const item = media[current];
+    if (item.type === "video") {
+      const video = document.createElement("video");
+      video.className = "gallery-current";
+      video.src = item.url;
+      video.controls = true;
+      video.playsInline = true;
+      video.preload = "metadata";
+      video.setAttribute("aria-label", title + " — видео " + (current + 1));
+      stage.append(video);
+    } else {
+      const image = document.createElement("img");
+      image.className = "gallery-current";
+      image.src = item.url;
+      image.alt = title + " — фото " + (current + 1);
+      image.loading = "lazy";
+      image.addEventListener("click", () => openLightbox(media.filter(entry => entry.type === "image").map(entry => entry.url), 0, title));
+      stage.append(image);
+    }
+    count.textContent = (current + 1) + " / " + media.length;
+    prev.hidden = media.length < 2;
+    next.hidden = media.length < 2;
   }
   prev.addEventListener("click", event => { event.stopPropagation(); show(current - 1); });
   next.addEventListener("click", event => { event.stopPropagation(); show(current + 1); });
-  frame.append(image, prev, next, count);
+  frame.append(stage, prev, next, count);
   gallery.append(frame);
   show(0);
 }
@@ -129,7 +143,7 @@ const lightboxStyle = document.createElement("style");
 lightboxStyle.textContent = `
   .place-popup .gallery { display: block; width: 100%; }
   .gallery-frame { position: relative; width: 100%; overflow: hidden; border-radius: 9px; background: #eef0f2; }
-  .gallery-current { display: block; width: 100%; height: 160px; object-fit: cover; cursor: zoom-in; }
+  .gallery-current { display: block; width: 100%; height: 160px; object-fit: contain; background: #111; }\n  img.gallery-current { object-fit: cover; cursor: zoom-in; }
   .gallery-arrow, .lightbox-arrow {
     position: absolute; top: 50%; transform: translateY(-50%); z-index: 2;
     width: 34px; height: 42px; border: 0; border-radius: 9px;
@@ -223,15 +237,15 @@ PLACES.forEach(place => {
     try {
       let photos = [];
       if (gallery.dataset.folder) {
-        photos = await listFolderPhotos(gallery.dataset.folder);
+        photos = await listFolderMedia(gallery.dataset.folder);
       } else {
-        photos = JSON.parse(gallery.dataset.photos || "[]");
+        photos = JSON.parse(gallery.dataset.photos || "[]").map(url => ({ url, type: "image" }));
       }
       gallery.dataset.loaded = "true";
       renderGallery(gallery, photos, gallery.dataset.title || place.title);
     } catch (error) {
       console.error("Не удалось загрузить фотографии:", error);
-      gallery.innerHTML = '<div class="no-photos">Не удалось загрузить фото из папки. Проверьте, что папка существует в репозитории.</div>';
+      gallery.innerHTML = '<div class="no-photos">Не удалось загрузить медиафайлы. Проверьте, что папка существует в репозитории.</div>';
     } finally {
       delete gallery.dataset.loading;
     }
