@@ -10,23 +10,6 @@ const PHOTO_EXTENSIONS = /\.(jpe?g|png|gif|webp|avif)$/i;
 
 const PLACES = [
   {
-    title: "Набережная Оби",
-    coordinates: [61.2456, 73.3962],
-    description: "Демонстрационная метка. Замените координаты, описание и фото на свои.",
-    photos: [
-      "https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=700&q=80",
-      "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?auto=format&fit=crop&w=700&q=80"
-    ]
-  },
-  {
-    title: "Место — пример",
-    coordinates: [61.2535, 73.4050],
-    description: "Вторая демонстрационная метка. Можно удалить или заменить.",
-    photos: [
-      "https://images.unsplash.com/photo-1518005020951-eccb494ad742?auto=format&fit=crop&w=700&q=80"
-    ]
-  },
-  {
     title: "асфальт",
     coordinates: [61.261566, 73.187978],
     description: "место с асфальтом",
