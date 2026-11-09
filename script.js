@@ -16,13 +16,13 @@ const PLACES = [
     photos: ["P1281853.JPG"]
   },
   {
-    title: "Spoon",
+    title: "Ложка",
     coordinates: [61.241187, 73.39222],
     description: "Фотографии автоматически загружаются из папки spoon.",
     photoFolder: "spoon"
   },
   {
-    title: "Balalaika",
+    title: "Балалайка",
     coordinates: [61.243951, 73.404528],
     description: "Фотографии автоматически загружаются из папки balalaika.",
     photoFolder: "balalaika"
