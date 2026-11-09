@@ -38,6 +38,12 @@ const PLACES = [
     coordinates: [61.249355, 73.429523],
     description: "Фотографии автоматически загружаются из папки cow.",
     photoFolder: "cow"
+  },
+  {
+    title: "Самовар с чашками",
+    coordinates: [61.255151, 73.435025],
+    description: "Фотографии автоматически загружаются из папки Samovar with cups.",
+    photoFolder: "Samovar with cups"
   }
 ];
 
