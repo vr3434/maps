@@ -26,6 +26,12 @@ const PLACES = [
     coordinates: [61.243951, 73.404528],
     description: "Фотографии автоматически загружаются из папки balalaika.",
     photoFolder: "balalaika"
+  },
+  {
+    title: "Матрёшка",
+    coordinates: [61.247816, 73.422265],
+    description: "Фотографии автоматически загружаются из папки Matryoshka.",
+    photoFolder: "Matryoshka"
   }
 ];
 
