@@ -44,6 +44,34 @@ const PLACES = [
     coordinates: [61.255151, 73.435025],
     description: "Фотографии автоматически загружаются из папки Samovar with cups.",
     photoFolder: "Samovar with cups"
+  },
+  {
+    title: "Лис — fox science",
+    coordinates: [61.238029, 73.409426],
+    description: "Видео fox_science из папки fox.",
+    photoFolder: "fox",
+    mediaFile: "fox_science"
+  },
+  {
+    title: "Лис — fox basket",
+    coordinates: [61.236895, 73.407528],
+    description: "Видео fox_basket из папки fox.",
+    photoFolder: "fox",
+    mediaFile: "fox_basket"
+  },
+  {
+    title: "Чёрный лис",
+    coordinates: [61.236787, 73.407086],
+    description: "Видео black_fox из папки fox.",
+    photoFolder: "fox",
+    mediaFile: "black_fox"
+  },
+  {
+    title: "Длинный лис",
+    coordinates: [61.237567, 73.406625],
+    description: "Видео long_fox из папки fox.",
+    photoFolder: "fox",
+    mediaFile: "long_fox"
   }
 ];
 
@@ -65,14 +93,15 @@ function escapeHtml(value) {
 function popupContent(place) {
   const initialPhotos = Array.isArray(place.photos) ? place.photos : [];
   const folderAttribute = place.photoFolder ? ' data-folder="' + escapeHtml(place.photoFolder) + '"' : "";
+  const fileAttribute = place.mediaFile ? ' data-media-file="' + escapeHtml(place.mediaFile) + '"' : "";
   const photosAttribute = ' data-photos="' + escapeHtml(JSON.stringify(initialPhotos)) + '"';
   return '<div class="place-popup"><h3>' + escapeHtml(place.title) +
     '</h3><p>' + escapeHtml(place.description || "") + '</p>' +
     '<div class="gallery" data-title="' + escapeHtml(place.title) + '"' +
-    folderAttribute + photosAttribute + '><div class="no-photos">Загрузка фотографий…</div></div></div>';
+    folderAttribute + fileAttribute + photosAttribute + '><div class="no-photos">Загрузка фотографий…</div></div></div>';
 }
 
-async function listFolderMedia(folder) {
+async function listFolderMedia(folder, exactBaseName) {
   const url = 'https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME +
     '/contents/' + folder.split("/").map(encodeURIComponent).join("/") +
     '?ref=' + encodeURIComponent(REPO_BRANCH);
@@ -81,7 +110,7 @@ async function listFolderMedia(folder) {
   const files = await response.json();
   if (!Array.isArray(files)) return [];
   return files
-    .filter(file => file.type === "file" && MEDIA_EXTENSIONS.test(file.name))
+    .filter(file => file.type === "file" && MEDIA_EXTENSIONS.test(file.name) && (!exactBaseName || file.name.replace(/\\.[^.]+$/, "") === exactBaseName))
     .sort((a, b) => a.name.localeCompare(b.name, "ru", { numeric: true }))
     .map(file => ({ url: file.download_url, type: /\.mp4$/i.test(file.name) ? "video" : "image" }))
     .filter(file => file.url);
@@ -237,7 +266,7 @@ PLACES.forEach(place => {
     try {
       let photos = [];
       if (gallery.dataset.folder) {
-        photos = await listFolderMedia(gallery.dataset.folder);
+        photos = await listFolderMedia(gallery.dataset.folder, gallery.dataset.mediaFile);
       } else {
         photos = JSON.parse(gallery.dataset.photos || "[]").map(url => ({ url, type: "image" }));
       }
