@@ -111,7 +111,12 @@ async function listFolderMedia(folder, exactBaseName) {
   const files = await response.json();
   if (!Array.isArray(files)) return [];
   return files
-    .filter(file => file.type === "file" && MEDIA_EXTENSIONS.test(file.name) && (!exactBaseName || file.name.replace(/\.[^.]+$/, "") === exactBaseName))
+    .filter(file => {
+      if (file.type !== "file" || !MEDIA_EXTENSIONS.test(file.name)) return false;
+      if (!exactBaseName) return true;
+      const baseName = file.name.replace(/\.[^.]+$/, "");
+      return baseName === exactBaseName || baseName.startsWith(exactBaseName + "_");
+    })
     .sort((a, b) => a.name.localeCompare(b.name, "ru", { numeric: true }))
     .map(file => ({ url: file.download_url, type: /\.(mp4|webm)$/i.test(file.name) ? "video" : "image" }))
     .filter(file => file.url);
