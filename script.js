@@ -232,9 +232,11 @@ lightboxStyle.textContent = `
     align-items: center; justify-content: center; padding: 54px 56px 28px;
     box-sizing: border-box; background: rgba(0,0,0,.95); }
   .photo-lightbox[hidden] { display: none; }
+  .lightbox-media { display: flex; align-items: center; justify-content: center;
+    width: 100%; height: 100%; min-width: 0; min-height: 0; }
   .photo-lightbox img, .photo-lightbox video { display: block; max-width: 100%; max-height: 100%;
     width: auto; height: auto; object-fit: contain; background: #000; }
-  .photo-lightbox video { width: min(100%, 1100px); max-height: calc(100vh - 90px); }
+  .photo-lightbox video { width: min(90vw, 1600px); max-height: 88vh; }
   .photo-lightbox-close { position: absolute; top: 10px; right: 14px; z-index: 3;
     width: 44px; height: 44px; border: 0; border-radius: 50%; color: #fff;
     background: rgba(255,255,255,.16); font: 32px/1 sans-serif; cursor: pointer; }
