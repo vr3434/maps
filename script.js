@@ -282,10 +282,22 @@ function openLightbox(media, index, title) {
   showLightboxPhoto(index);
   lightbox.hidden = false;
   lightbox.querySelector(".photo-lightbox-close").focus();
+
+  // Полноэкранным становится весь просмотр, а не только видеоплеер:
+  // стрелки остаются поверх видео и позволяют перейти к фото.
+  if (lightbox.requestFullscreen && !document.fullscreenElement) {
+    lightbox.requestFullscreen().catch(() => {
+      // Если браузер не поддерживает fullscreen для контейнера,
+      // остаётся полноэкранная раскладка через position: fixed.
+    });
+  }
 }
 function closeLightbox() {
   lightbox.hidden = true;
   lightboxMedia.replaceChildren();
+  if (document.fullscreenElement && document.exitFullscreen) {
+    document.exitFullscreen().catch(() => {});
+  }
 }
 lightbox.querySelector(".photo-lightbox-close").addEventListener("click", closeLightbox);
 lightbox.querySelector(".lightbox-prev").addEventListener("click", () => showLightboxPhoto(lightboxIndex - 1));
