@@ -147,6 +147,16 @@ function renderGallery(gallery, media, title) {
   next.textContent = "›"; next.setAttribute("aria-label", "Следующий файл");
   const count = document.createElement("div");
   count.className = "gallery-count";
+  const expand = document.createElement("button");
+  expand.type = "button";
+  expand.className = "gallery-expand";
+  expand.textContent = "⛶";
+  expand.setAttribute("aria-label", "Открыть на весь экран");
+  expand.addEventListener("click", event => {
+    event.preventDefault();
+    event.stopPropagation();
+    openLightbox(media, current, title);
+  });
   function show(index) {
     current = (index + media.length) % media.length;
     stage.replaceChildren();
@@ -156,6 +166,7 @@ function renderGallery(gallery, media, title) {
       video.className = "gallery-current";
       video.src = item.url;
       video.controls = true;
+      video.controlsList = "nofullscreen";
       video.playsInline = true;
       video.preload = "metadata";
       video.setAttribute("aria-label", title + " — видео " + (current + 1));
@@ -166,7 +177,7 @@ function renderGallery(gallery, media, title) {
       image.src = item.url;
       image.alt = title + " — фото " + (current + 1);
       image.loading = "lazy";
-      image.addEventListener("click", () => openLightbox(media.filter(entry => entry.type === "image").map(entry => entry.url), 0, title));
+      image.addEventListener("click", () => openLightbox(media, current, title));
       stage.append(image);
     }
     count.textContent = (current + 1) + " / " + media.length;
@@ -188,7 +199,7 @@ function renderGallery(gallery, media, title) {
     if (Math.abs(deltaX) > 45) show(current + (deltaX < 0 ? 1 : -1));
   }, { passive: true });
 
-  frame.append(stage, prev, next, count);
+  frame.append(stage, prev, next, count, expand);
   gallery.append(frame);
   show(0);
 }
@@ -206,6 +217,9 @@ lightboxStyle.textContent = `
     pointer-events: auto;
   }
   .gallery-prev { left: 6px; } .gallery-next { right: 6px; }
+  .gallery-expand { position: absolute; top: 6px; right: 6px; z-index: 3;
+    width: 34px; height: 34px; border: 0; border-radius: 8px;
+    background: rgba(0,0,0,.72); color: white; font: 24px/1 sans-serif; cursor: pointer; }
   .gallery-count { position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%);
     padding: 3px 8px; border-radius: 12px; background: #0009; color: white; font: 12px sans-serif; }
   .gallery-arrow[hidden], .lightbox-arrow[hidden] { display: none; }
@@ -213,8 +227,9 @@ lightboxStyle.textContent = `
     align-items: center; justify-content: center; padding: 54px 56px 28px;
     box-sizing: border-box; background: rgba(0,0,0,.95); }
   .photo-lightbox[hidden] { display: none; }
-  .photo-lightbox img { display: block; max-width: 100%; max-height: 100%;
-    width: auto; height: auto; object-fit: contain; }
+  .photo-lightbox img, .photo-lightbox video { display: block; max-width: 100%; max-height: 100%;
+    width: auto; height: auto; object-fit: contain; background: #000; }
+  .photo-lightbox video { width: min(100%, 1100px); max-height: calc(100vh - 90px); }
   .photo-lightbox-close { position: absolute; top: 10px; right: 14px; z-index: 3;
     width: 44px; height: 44px; border: 0; border-radius: 50%; color: #fff;
     background: rgba(255,255,255,.16); font: 32px/1 sans-serif; cursor: pointer; }
@@ -234,14 +249,14 @@ lightbox.className = "photo-lightbox";
 lightbox.hidden = true;
 lightbox.setAttribute("role", "dialog");
 lightbox.setAttribute("aria-modal", "true");
-lightbox.setAttribute("aria-label", "Просмотр фотографий");
-lightbox.innerHTML = '<button type="button" class="photo-lightbox-close" aria-label="Закрыть фото">×</button>' +
-  '<button type="button" class="lightbox-arrow lightbox-prev" aria-label="Предыдущее фото">‹</button>' +
-  '<img alt=""><button type="button" class="lightbox-arrow lightbox-next" aria-label="Следующее фото">›</button>' +
+lightbox.setAttribute("aria-label", "Просмотр фото и видео");
+lightbox.innerHTML = '<button type="button" class="photo-lightbox-close" aria-label="Закрыть просмотр">×</button>' +
+  '<button type="button" class="lightbox-arrow lightbox-prev" aria-label="Предыдущий файл">‹</button>' +
+  '<div class="lightbox-media"></div><button type="button" class="lightbox-arrow lightbox-next" aria-label="Следующий файл">›</button>' +
   '<div class="lightbox-count"></div>';
 document.body.appendChild(lightbox);
 
-const lightboxImage = lightbox.querySelector("img");
+const lightboxMedia = lightbox.querySelector(".lightbox-media");
 const lightboxCount = lightbox.querySelector(".lightbox-count");
 let lightboxPhotos = [];
 let lightboxIndex = 0;
@@ -249,14 +264,29 @@ let lightboxTitle = "";
 function showLightboxPhoto(index) {
   if (!lightboxPhotos.length) return;
   lightboxIndex = (index + lightboxPhotos.length) % lightboxPhotos.length;
-  lightboxImage.src = lightboxPhotos[lightboxIndex];
-  lightboxImage.alt = lightboxTitle + " — фото " + (lightboxIndex + 1);
+  lightboxMedia.replaceChildren();
+  const item = lightboxPhotos[lightboxIndex];
+  if (item.type === "video") {
+    const video = document.createElement("video");
+    video.src = item.url;
+    video.controls = true;
+    video.controlsList = "nofullscreen";
+    video.autoplay = true;
+    video.playsInline = true;
+    video.preload = "metadata";
+    lightboxMedia.append(video);
+  } else {
+    const image = document.createElement("img");
+    image.src = item.url;
+    image.alt = lightboxTitle + " — фото " + (lightboxIndex + 1);
+    lightboxMedia.append(image);
+  }
   lightboxCount.textContent = (lightboxIndex + 1) + " / " + lightboxPhotos.length;
   lightbox.querySelector(".lightbox-prev").hidden = lightboxPhotos.length < 2;
   lightbox.querySelector(".lightbox-next").hidden = lightboxPhotos.length < 2;
 }
-function openLightbox(photos, index, title) {
-  lightboxPhotos = photos;
+function openLightbox(media, index, title) {
+  lightboxPhotos = media;
   lightboxTitle = title;
   showLightboxPhoto(index);
   lightbox.hidden = false;
@@ -264,7 +294,7 @@ function openLightbox(photos, index, title) {
 }
 function closeLightbox() {
   lightbox.hidden = true;
-  lightboxImage.removeAttribute("src");
+  lightboxMedia.replaceChildren();
 }
 lightbox.querySelector(".photo-lightbox-close").addEventListener("click", closeLightbox);
 lightbox.querySelector(".lightbox-prev").addEventListener("click", () => showLightboxPhoto(lightboxIndex - 1));
