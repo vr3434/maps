@@ -1,6 +1,7 @@
 /*
  * Фото можно хранить в отдельных папках репозитория.
  * Для автоматической загрузки списка файлов используется публичный GitHub Contents API.
+ * Поддерживаемые форматы: JPG/JPEG, PNG, GIF, WebP, AVIF и MP4.
  * Папка spoon/ привязана к метке 61.241187, 73.39222.
  */
 const REPO_OWNER = "VR3434";
@@ -119,7 +120,7 @@ async function listFolderMedia(folder, exactBaseName) {
 function renderGallery(gallery, media, title) {
   gallery.replaceChildren();
   if (!media.length) {
-    gallery.innerHTML = '<div class="no-photos">В папке пока нет фото или видео MP4.</div>';
+    gallery.innerHTML = '<div class="no-photos">В папке пока нет поддерживаемых фото (в том числе WebP) или видео MP4.</div>';
     return;
   }
   let current = 0;
