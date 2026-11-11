@@ -150,7 +150,7 @@ function renderGallery(gallery, media, title) {
   const expand = document.createElement("button");
   expand.type = "button";
   expand.className = "gallery-expand";
-  expand.textContent = "⛶";
+  expand.textContent = "Открыть на весь экран";
   expand.setAttribute("aria-label", "Открыть на весь экран");
   expand.addEventListener("click", event => {
     event.preventDefault();
@@ -223,8 +223,8 @@ lightboxStyle.textContent = `
   .gallery-prev { left: 6px; } .gallery-next { right: 6px; }
   .gallery-expand { position: absolute; top: 6px; right: 6px; z-index: 3;
     display: flex; align-items: center; justify-content: center;
-    width: 34px; height: 34px; padding: 0; border: 0; border-radius: 8px;
-    background: rgba(0,0,0,.72); color: white; font: 24px/1 sans-serif; cursor: pointer; }
+    min-height: 34px; padding: 7px 10px; border: 0; border-radius: 8px;
+    background: rgba(0,0,0,.72); color: white; font: 13px/1.2 sans-serif; cursor: pointer; }
   .gallery-count { position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%);
     padding: 3px 8px; border-radius: 12px; background: #0009; color: white; font: 12px sans-serif; }
   .gallery-arrow[hidden], .lightbox-arrow[hidden] { display: none; }
