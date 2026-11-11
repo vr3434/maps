@@ -1,13 +1,13 @@
 /*
  * Фото можно хранить в отдельных папках репозитория.
  * Для автоматической загрузки списка файлов используется публичный GitHub Contents API.
- * Поддерживаемые форматы: JPG/JPEG, PNG, GIF, WebP, AVIF и MP4.
+ * Поддерживаемые форматы: JPG/JPEG, PNG, GIF, WebP, AVIF, MP4 и WebM (VP9).
  * Папка spoon/ привязана к метке 61.241187, 73.39222.
  */
 const REPO_OWNER = "VR3434";
 const REPO_NAME = "maps";
 const REPO_BRANCH = "fix/fullscreen-map-and-refresh";
-const MEDIA_EXTENSIONS = /\.(jpe?g|png|gif|webp|avif|mp4)$/i;
+const MEDIA_EXTENSIONS = /\.(jpe?g|png|gif|webp|avif|mp4|webm)$/i;
 
 const PLACES = [
   {
@@ -113,14 +113,14 @@ async function listFolderMedia(folder, exactBaseName) {
   return files
     .filter(file => file.type === "file" && MEDIA_EXTENSIONS.test(file.name) && (!exactBaseName || file.name.replace(/\.[^.]+$/, "") === exactBaseName))
     .sort((a, b) => a.name.localeCompare(b.name, "ru", { numeric: true }))
-    .map(file => ({ url: file.download_url, type: /\.mp4$/i.test(file.name) ? "video" : "image" }))
+    .map(file => ({ url: file.download_url, type: /\.(mp4|webm)$/i.test(file.name) ? "video" : "image" }))
     .filter(file => file.url);
 }
 
 function renderGallery(gallery, media, title) {
   gallery.replaceChildren();
   if (!media.length) {
-    gallery.innerHTML = '<div class="no-photos">В папке пока нет поддерживаемых фото (в том числе WebP) или видео MP4.</div>';
+    gallery.innerHTML = '<div class="no-photos">В папке пока нет поддерживаемых фото (в том числе WebP) или видео MP4/WebM.</div>';
     return;
   }
   let current = 0;
