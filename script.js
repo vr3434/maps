@@ -297,14 +297,8 @@ function openLightbox(media, index, title) {
   lightbox.hidden = false;
   lightbox.querySelector(".photo-lightbox-close").focus();
 
-  // Полноэкранным становится весь просмотр, а не только видеоплеер:
-  // стрелки остаются поверх видео и позволяют перейти к фото.
-  if (lightbox.requestFullscreen && !document.fullscreenElement) {
-    lightbox.requestFullscreen().catch(() => {
-      // Если браузер не поддерживает fullscreen для контейнера,
-      // остаётся полноэкранная раскладка через position: fixed.
-    });
-  }
+  // Открываем просмотр поверх всей страницы без перехода браузера
+  // в системный Fullscreen API: остаются видны стрелки и кнопка закрытия.
 }
 function closeLightbox() {
   lightbox.hidden = true;
