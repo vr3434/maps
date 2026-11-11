@@ -173,8 +173,21 @@ function renderGallery(gallery, media, title) {
     prev.hidden = media.length < 2;
     next.hidden = media.length < 2;
   }
-  prev.addEventListener("click", event => { event.stopPropagation(); show(current - 1); });
-  next.addEventListener("click", event => { event.stopPropagation(); show(current + 1); });
+  prev.addEventListener("click", event => { event.preventDefault(); event.stopPropagation(); show(current - 1); });
+  next.addEventListener("click", event => { event.preventDefault(); event.stopPropagation(); show(current + 1); });
+
+  // На телефонах можно перелистывать фото и видео свайпом в обе стороны.
+  let touchStartX = null;
+  frame.addEventListener("touchstart", event => {
+    if (event.touches.length === 1) touchStartX = event.touches[0].clientX;
+  }, { passive: true });
+  frame.addEventListener("touchend", event => {
+    if (touchStartX === null || !event.changedTouches.length) return;
+    const deltaX = event.changedTouches[0].clientX - touchStartX;
+    touchStartX = null;
+    if (Math.abs(deltaX) > 45) show(current + (deltaX < 0 ? 1 : -1));
+  }, { passive: true });
+
   frame.append(stage, prev, next, count);
   gallery.append(frame);
   show(0);
@@ -187,8 +200,10 @@ lightboxStyle.textContent = `
   .gallery-current { display: block; width: 100%; height: 160px; object-fit: contain; background: #111; }\n  img.gallery-current { object-fit: cover; cursor: zoom-in; }
   .gallery-arrow, .lightbox-arrow {
     position: absolute; top: 50%; transform: translateY(-50%); z-index: 2;
-    width: 34px; height: 42px; border: 0; border-radius: 9px;
-    background: rgba(0,0,0,.58); color: white; font: 30px/1 sans-serif; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    width: 38px; height: 46px; padding: 0; appearance: none; border: 0; border-radius: 9px;
+    background: rgba(0,0,0,.72); color: white; font: 30px/1 sans-serif; cursor: pointer;
+    pointer-events: auto;
   }
   .gallery-prev { left: 6px; } .gallery-next { right: 6px; }
   .gallery-count { position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%);
