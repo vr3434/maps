@@ -47,6 +47,12 @@ const PLACES = [
     photoFolder: "Samovar with cups"
   },
   {
+    title: "shki",
+    coordinates: [61.247241, 73.414663],
+    description: "Фото и видео автоматически загружаются из папки shki.",
+    photoFolder: "shki"
+  },
+  {
     title: "Лис — fox science",
     coordinates: [61.238029, 73.409426],
     description: "Видео fox_science из папки fox.",
