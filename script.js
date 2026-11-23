@@ -18,6 +18,12 @@ const PLACES = [
     audioFile: "poko-koko-choko-ultra-mega-cheri-tikho.mp3"
   },
   {
+    title: "ДШИ",
+    coordinates: [61.254732, 73.407951],
+    description: "Фото и видео автоматически загружаются из папки dshi.",
+    photoFolder: "dshi"
+  },
+  {
     title: "Сургута не существует",
     coordinates: [61.241345, 73.392287],
     description: "",
