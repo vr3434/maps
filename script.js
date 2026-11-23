@@ -23,6 +23,12 @@ const PLACES = [
     photoFolder: "spoon"
   },
   {
+    title: "Филармония",
+    coordinates: [61.241281, 73.391467],
+    description: "Фото и видео автоматически загружаются из папки philharmonic.",
+    photoFolder: "philharmonic"
+  },
+  {
     title: "Балалайка",
     coordinates: [61.243951, 73.404528],
     description: "Фотографии автоматически загружаются из папки balalaika.",
