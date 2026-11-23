@@ -1,1 +1,1 @@
-здесь ЦЕЛОЕ НИЧЕГО ![Uploading image.png…]()
+здесь ЦЕЛОЕ НИЧЕГО ![Фото для README](readme-kitten.webp)
