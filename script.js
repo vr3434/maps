@@ -24,6 +24,12 @@ const PLACES = [
     photoFolder: "dshi"
   },
   {
+    title: "Арт-резиденция",
+    coordinates: [61.257462, 73.374987],
+    description: "Фото и видео автоматически загружаются из папки art-residency.",
+    photoFolder: "art-residency"
+  },
+  {
     title: "Сургута не существует",
     coordinates: [61.241345, 73.392287],
     description: "",
