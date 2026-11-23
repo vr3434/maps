@@ -14,7 +14,8 @@ const PLACES = [
     title: "асфальт",
     coordinates: [61.261566, 73.187978],
     description: "место с асфальтом",
-    photos: ["P1281853.JPG"]
+    photos: ["P1281853.JPG"],
+    audioFile: "poko-koko-choko-ultra-mega-cheri-tikho.mp3"
   },
   {
     title: "Ложка",
@@ -108,8 +109,13 @@ function popupContent(place) {
   const folderAttribute = place.photoFolder ? ' data-folder="' + escapeHtml(place.photoFolder) + '"' : "";
   const fileAttribute = place.mediaFile ? ' data-media-file="' + escapeHtml(place.mediaFile) + '"' : "";
   const photosAttribute = ' data-photos="' + escapeHtml(JSON.stringify(initialPhotos)) + '"';
+  const audioPlayer = place.audioFile
+    ? '<audio class="place-audio" controls preload="none" src="https://raw.githubusercontent.com/' +
+      REPO_OWNER + '/' + REPO_NAME + '/' + REPO_BRANCH + '/' +
+      encodeURIComponent(place.audioFile) + '"></audio>'
+    : "";
   return '<div class="place-popup"><h3>' + escapeHtml(place.title) +
-    '</h3><p>' + escapeHtml(place.description || "") + '</p>' +
+    '</h3><p>' + escapeHtml(place.description || "") + '</p>' + audioPlayer +
     '<div class="gallery" data-title="' + escapeHtml(place.title) + '"' +
     folderAttribute + fileAttribute + photosAttribute + '><div class="no-photos">Загрузка фотографий…</div></div></div>';
 }
