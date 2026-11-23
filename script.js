@@ -18,6 +18,12 @@ const PLACES = [
     audioFile: "poko-koko-choko-ultra-mega-cheri-tikho.mp3"
   },
   {
+    title: "Сургута не существует",
+    coordinates: [61.241345, 73.392287],
+    description: "",
+    photos: []
+  },
+  {
     title: "Ложка",
     coordinates: [61.241187, 73.39222],
     description: "Фотографии автоматически загружаются из папки spoon.",
